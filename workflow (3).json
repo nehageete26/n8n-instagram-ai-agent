@@ -3,8 +3,8 @@
   "nodes": [
     {
       "parameters": {
-        "formTitle": "Instagram Posts ",
-        "formDescription": "Fill out all the information to generate instagram content with post. ",
+        "formTitle": "Instagram Posts",
+        "formDescription": "Fill out all the information to generate instagram content with post.",
         "formFields": {
           "values": [
             {
@@ -14,7 +14,7 @@
             },
             {
               "fieldLabel": "Content Type ",
-              "placeholder": "Marketing ",
+              "placeholder": "Marketing",
               "requiredField": true
             },
             {
@@ -22,186 +22,98 @@
               "requiredField": true
             }
           ]
-        },
-        "options": {}
+        }
       },
       "type": "n8n-nodes-base.formTrigger",
       "typeVersion": 2.5,
-      "position": [
-        -208,
-        -48
-      ],
-      "id": "3cd8b4db-8366-40bd-9c28-f9c0c9388641",
-      "name": "On form submission",
-      "webhookId": "62751405-f20b-4a0c-9fa9-61f666af1465"
+      "position": [-208, -48],
+      "name": "On form submission"
     },
     {
       "parameters": {
         "promptType": "define",
-        "text": "=You are an assistant that helps generate Instagram content. \nThe user has submitted a form with a \"Content Type\" field. \nPlease provide a detailed explanation of the content type they selected.\n\nForm Data:\n- Content Type: {{ $json['Content Type '] }}\n\nExplain:\n1. What this content type is.\n2. How it can be used on Instagram.\n3. Tips or examples for creating posts of this content type.\n",
-        "options": {}
+        "text": "=You are an assistant that helps generate Instagram content.\nThe user has submitted a form with a \"Content Type\" field.\n\nForm Data:\n- Content Type: {{ $json['Content Type '] }}\n\nExplain:\n1. What this content type is.\n2. How it can be used on Instagram.\n3. Tips or examples for creating posts of this content type."
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
-      "position": [
-        0,
-        -48
-      ],
-      "id": "dd1fd2d6-687e-449c-8173-a96d3eaf2804",
+      "position": [0, -48],
       "name": "Instagram Content generator"
     },
     {
-      "parameters": {
-        "options": {}
-      },
+      "parameters": {},
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
-      "position": [
-        -64,
-        208
-      ],
-      "id": "8f762bc1-0885-4360-a739-35b36e4277fd",
+      "position": [-64, 208],
       "name": "Google Gemini Chat Model",
       "credentials": {
         "googlePalmApi": {
-          "id": "peGhFizk8EwvChEW",
-          "name": "Google Gemini(PaLM) Api account 3"
+          "id": "YOUR_API_KEY",
+          "name": "Google Gemini API (ADD YOUR API KEY)"
         }
       }
     },
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Create a visually appealing image that represents the following content type: {{ $('On form submission').item.json['Content Type '] }}. \nFocus on clear visuals, bright colors, and elements that illustrate the concept. \nStyle: modern, clean, digital artwork. \nOrientation: landscape. \nInclude details relevant to {{ $('On form submission').item.json['Content Type '] }}  without adding text overlays.\n",
-        "options": {}
+        "text": "=Create a visually appealing image that represents the following content type: {{ $('On form submission').item.json['Content Type '] }}.\nFocus on clear visuals, bright colors, and elements that illustrate the concept.\nStyle: modern, clean, digital artwork.\nOrientation: landscape.\nDo not add text overlays."
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
-      "position": [
-        352,
-        -48
-      ],
-      "id": "bdd9738e-ea56-42c2-8aaa-0763b838787e",
+      "position": [352, -48],
       "name": "Image Prompt"
     },
     {
       "parameters": {
-        "fromEmail": "nehageete92@gmail.com",
-        "toEmail": "nehageete92@gmail.com",
-        "subject": "Your Instagram Content and Post Is Ready. ",
-        "html": "==<h2>Your Instagram Content:</h2>\n<p>{{ $('Instagram Content generator').item.json.output }}</p>\n<hr>\n<p><strong>Content Type:</strong> {{ $('On form submission').item.json['Content Type '] }}</p>\n<p><strong>Target Audience:</strong> {{ $('On form submission').item.json['Target Audience '] }}</p>\n<p>The generated image is attached to this email.</p>",
+        "url": "=https://image.pollinations.ai/prompt/{{ encodeURIComponent($('Image Prompt').item.json.output) }}"
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [720, 160],
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "fromEmail": "your-email@example.com",
+        "toEmail": "={{ $('On form submission').item.json['Enter your email'] }}",
+        "subject": "Your Instagram Content and Post Is Ready",
+        "html": "<h2>Your Instagram Content</h2>\n<p>{{ $('Instagram Content generator').item.json.output }}</p>\n<hr>\n<p><strong>Content Type:</strong> {{ $('On form submission').item.json['Content Type '] }}</p>\n<p><strong>Target Audience:</strong> {{ $('On form submission').item.json['Target Audience '] }}</p>\n<p>The generated image is included as a link.</p>",
         "options": {
           "attachments": "data"
         }
       },
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
-      "position": [
-        1120,
-        -48
-      ],
-      "id": "083d41fb-4716-4750-b688-5432050b9772",
+      "position": [1120, -48],
       "name": "Send email",
-      "webhookId": "7b94f2ce-3ff4-4dca-882c-421b8e6a1914",
       "credentials": {
         "smtp": {
-          "id": "q8JB4TWLGGOsGMGB",
-          "name": "SMTP account"
+          "id": "YOUR_SMTP_CREDENTIALS",
+          "name": "SMTP / Gmail (ADD YOUR CREDENTIALS)"
         }
       }
-    },
-    {
-      "parameters": {
-        "url": "=https://image.pollinations.ai/prompt/{{ encodeURIComponent($('Image Prompt').item.json.output) }}",
-        "options": {
-          "response": {
-            "response": {}
-          }
-        }
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.3,
-      "position": [
-        720,
-        160
-      ],
-      "id": "ee9582b7-0b2a-41ee-98f4-3d8fd0f7e96f",
-      "name": "HTTP Request"
     }
   ],
-  "pinData": {},
   "connections": {
     "On form submission": {
-      "main": [
-        [
-          {
-            "node": "Instagram Content generator",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{ "node": "Instagram Content generator", "type": "main" }]]
     },
     "Google Gemini Chat Model": {
       "ai_languageModel": [
         [
-          {
-            "node": "Instagram Content generator",
-            "type": "ai_languageModel",
-            "index": 0
-          },
-          {
-            "node": "Image Prompt",
-            "type": "ai_languageModel",
-            "index": 0
-          }
+          { "node": "Instagram Content generator", "type": "ai_languageModel" },
+          { "node": "Image Prompt", "type": "ai_languageModel" }
         ]
       ]
     },
     "Instagram Content generator": {
-      "main": [
-        [
-          {
-            "node": "Image Prompt",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{ "node": "Image Prompt", "type": "main" }]]
     },
     "Image Prompt": {
-      "main": [
-        [
-          {
-            "node": "HTTP Request",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{ "node": "HTTP Request", "type": "main" }]]
     },
     "HTTP Request": {
-      "main": [
-        [
-          {
-            "node": "Send email",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{ "node": "Send email", "type": "main" }]]
     }
   },
-  "active": false,
-  "settings": {
-    "executionOrder": "v1",
-    "availableInMCP": false
-  },
-  "versionId": "34ac6432-1e3d-4561-b580-d9143e4967e7",
-  "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "18deb2839436ffaad410cd629b55653759316afe80f323de08fdbecd6e058273"
-  },
-  "id": "yKQKpiWDxerTzu1Ty5fDT",
-  "tags": []
+  "active": false
 }
